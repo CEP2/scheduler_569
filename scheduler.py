@@ -92,7 +92,9 @@ def considerCourse(courseList=None, acceptedList=None, courseIndex=None):
 	#Accept first found 
 	acceptedCourse = courseList[index]
 	acceptedCourse.setViable(False)	
-	acceptedList.append(acceptedCourse)	
+	acceptedList.append(acceptedCourse)
+
+	acceptedBool = (acceptedCourse.getName(), acceptedCourse.isViable())	
 	
 	for listing in courseList[index+1:]:
 		courseBool = (listing.getName(), listing.isViable()) #DEBUG - VISIBILITY

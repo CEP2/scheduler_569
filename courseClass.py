@@ -182,7 +182,7 @@ def isCompatibleTime(courseA=None, courseB=None):
 	#Don't swap otherwise.
 
 	#Compare startA / endA vs startA/startB
-	hourDuration = (timeA[0].getHour() - timeA[1].getHour())	 #Duration of classA
+	hourDuration = (timeA[1].getHour() - timeA[0].getHour())	 #Duration of classA
 	hourNext = timeB[0].getHour() - timeA[0].getHour() #Duration between start of Class A/B
 	#If the next class is sooner in hours than the end of the course...
 	if (hourNext > hourDuration):
@@ -190,7 +190,7 @@ def isCompatibleTime(courseA=None, courseB=None):
 	#If the classes start in the same hour...
 	elif (hourNext == hourDuration):
 		#Check minute comparison.
-		minDuration = timeA[0].getMinute() - timeA[1].getMinute()
+		minDuration = timeA[1].getMinute() - timeA[0].getMinute()
 		minNext = timeB[0].getMinute() - timeA[0].getMinute()
 		#If next class is later than the end time of the first class...
 		if (minNext > minDuration):
