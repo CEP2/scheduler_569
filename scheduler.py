@@ -10,6 +10,7 @@ Initial prioritization is by listing order.
 
 #from courseClass import*
 from courseClass import*
+import sys
 
 BARRIER_TEXT = "===================="
 """
@@ -36,7 +37,19 @@ def countViable(courseList=None):
 		print ("countViable:\t No list present.")
 		return -1
 	count = 0
+	for listing in courseList:
+		if (listing.isViable()):
+			count+=1
 	return count
+
+def sumCourseUnits(acceptedList=None):
+	if (acceptedList==None):
+		print("sumCourseUnits:\tNo list available.")
+		return
+	sumUnits = 0
+	for listing in acceptedList:
+		sumUnits += listing.getUnits()
+	return sumUnits
 
 """
 	Input
@@ -52,35 +65,62 @@ def findNextViableCourse(courseList=None):
 	index = 0
 	listLen = len(courseList)
 	while index < listLen:
-		if (courseList[index].isViable)
+		if (courseList[index].isViable()):
+			return index
 		index += 1 
-		
-		
-	
 	return -1
 
 """
 Input
 	Accepted Course List (State)
 	Full Course List (Entire List)
+	OPTIONAL courseIndex - location to start on courseList.
 Objective
 	Take the course at the front of the list (if viable)
 	Compare it to the accepted list.
 		If it fits, add to accepted AND mark all remaining as viable/not
 """
-def considerCourse(courseList=None, acceptedList=None):
+def considerCourse(courseList=None, acceptedList=None, courseIndex=None):
 	if (courseList == None or acceptedList == None):
 		print("considerCourse():\tCourse or Accepted List is missing.")
 		return
+	if (len(acceptedList) == 0):
+		index = 0
+	else:
+		index = findNextViableCourse(courseList)
+	
+	#Accept first found 
+	acceptedCourse = courseList[index]
+	acceptedCourse.setViable(False)	
+	acceptedList.append(acceptedCourse)	
+	
+	for listing in courseList[index+1:]:
+		courseBool = (listing.getName(), listing.isViable()) #DEBUG - VISIBILITY
+		if (listing.isViable() == False):
+			continue
+		listing.setViable(isCompatibleCourse(acceptedCourse, listing))
+		courseBool = (listing.getName(), listing.isViable())
+	return
+
+def findCourses(courseList=None, acceptedList=None):
+	if (courseList == None or acceptedList == None):
+		print("findCourses():\tCourse or Accepted List is missing.")
+		return
+	viableCount = countViable(courseList)
+	while viableCount > 0: 
+		considerCourse(courseList, acceptedList)
+		viableCount = countViable(courseList)
 	
 	return
-	
-	
-	
 
+		
+		
 def main():
-	classesTextList = readClasses()
-	print(classesTextList)
+	if len(sys.argv)	== 2:
+		classesTextList = readClasses(sys.argv[1])	
+	else:
+		classesTextList = readClasses()
+	#print(classesTextList)
 	
 	courseList = list()		 	#General Course list
 	acceptedList = list()		#Accepted courses
@@ -89,16 +129,21 @@ def main():
 		newCourse = Course(course)
 		courseList.append(newCourse)
 		
-	
-	#Begin considering courses.
-	
-		
-	#TEST COMPARISONS
-	if ( isCompatibleCourse (courseList[1], courseList[3]) ):
-		print("CLEAR")
 	print("\nCourse List\n" + BARRIER_TEXT)
 	printCourseList(courseList)
 	print(BARRIER_TEXT)
+		
+	#Begin considering courses.
+	findCourses(courseList, acceptedList)
+	
+	print("\nACCEPTED COURSES\n" + BARRIER_TEXT)
+	print("Total Units:\t{}".format(sumCourseUnits(acceptedList)))
+	printCourseList(acceptedList)
+	print(BARRIER_TEXT)	
+	#TEST COMPARISONS
+	#if ( isCompatibleCourse (courseList[1], courseList[3]) ):
+		#print("CLEAR")
+
 		
 	
 	

@@ -95,6 +95,14 @@ class classTime(object):
 #End Time Class
 #================================================	
 
+def isCompatibleSchedule(courseA=None, acceptedList=None):
+	for listing in acceptedList:
+		if not isCompatibleCourse(courseA, listing):
+			return False
+	return True
+#End isCompatibleCourse
+#================================================
+
 def isCompatibleCourse(courseA=None, courseB=None):
 	if (isCompatibleDay(courseA, courseB) == False):
 		if (isCompatibleTime(courseA,courseB) == False):
@@ -114,14 +122,18 @@ def isCompatibleDay(courseA=None, courseB=None):
 		answer = False
 	if (answer == False):
 		return answer
-		
+	
+	nameA = courseA.getName()
+	nameB = courseB.getName()
+	
 	daysA = courseA.getDays()
 	daysB = courseB.getDays()
 	
 	for day in daysA:
 		if (day in daysB):
-			return False
-	return True
+			answer = False
+			break
+	return answer
 
 #End isCompatibleDay
 #================================================	
@@ -142,19 +154,21 @@ def isCompatibleTime(courseA=None, courseB=None):
 		answer = False
 	if (answer == False):
 		return			
-			
+	
+	
+		
 	#Pull times into organized array.	
-	timeA = [courseA.getStartTime(), courseA.getEndTime]	#Course 1
-	timeB = [courseB.getStartTime(), courseB.getEndTime]	#Course 2
+	timeA = [courseA.getStartTime(), courseA.getEndTime()]	#Course 1
+	timeB = [courseB.getStartTime(), courseB.getEndTime()]	#Course 2
 	
 	#Avoid assumption that course A starts earlier.
 	#Swap B/A if Hour is earlier, if equal check minute
 	startHourDiff = timeB[0].getHour() - timeA[0].getHour()
 	if ( startHourDiff < 0):
 		#Perform a swap if class B starts earlier based on Hour.
-		temp = timeA
-		timeA = timeB
-		timeB = temp
+		#temp = timeA
+		timeA = [courseB.getStartTime(), courseB.getEndTime()]
+		timeB = [courseA.getStartTime(), courseA.getEndTime()]
 	#If the hour is equal, check for minutes being less. 
 	elif ( (timeB[0].getHour() - timeA[0].getHour()) == 0):
 		startMinDiff = timeB[0].getMinute() - timeA[0].getMinute()
@@ -163,13 +177,12 @@ def isCompatibleTime(courseA=None, courseB=None):
 			return False
 		#If they don't start at the same time, swap minutes.
 		if (startMinDiff < 0):
-			temp = timeA
-			timeA = timeB
-			timeB = temp
+			timeA = [courseB.getStartTime(), courseB.getEndTime()]
+			timeB = [courseA.getStartTime(), courseA.getEndTime()]
 	#Don't swap otherwise.
-	
+
 	#Compare startA / endA vs startA/startB
-	hourDuration = timeA[0].getHour() - timeA[1].getHour()	 #Duration of classA
+	hourDuration = (timeA[0].getHour() - timeA[1].getHour())	 #Duration of classA
 	hourNext = timeB[0].getHour() - timeA[0].getHour() #Duration between start of Class A/B
 	#If the next class is sooner in hours than the end of the course...
 	if (hourNext > hourDuration):
